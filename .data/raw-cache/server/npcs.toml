@@ -1447,3 +1447,56 @@ inherit = "npc.wilderness_capeseller_10"
 [npc.params]
 "param.shop_inventory" = "inv.wildernesscapeshop10"
 "param.shop_name" = "Sam's Wilderness Cape Shop"
+
+[[npc]]
+id = "npc.godwars_bandos_avatar"
+inherit = "npc.godwars_bandos_avatar"
+huntMode = 6
+huntRange = 30
+maxRange = 30
+[npc.params]
+"param.attack_anim"="seq.godwars_bandos_attack"
+"param.defend_anim"="seq.godwars_bandos_defend"
+"param.death_anim"="seq.godwars_bandos_death"
+
+[[npc]]
+id = "npc.godwars_sergeant_goblin1"
+inherit = "npc.godwars_sergeant_goblin1"
+huntMode = 6
+huntRange = 30
+maxRange = 30
+[npc.params]
+"param.attack_anim"="seq.slice_surface_goblin_sergent_attack"
+"param.defend_anim"="seq.slice_surface_goblin_sergent_defend"
+"param.death_anim"="seq.slice_surface_goblin_sergent_death"
+"param.npc_attack_type"="category.attacktype_crush"
+
+[[npc]]
+id = "npc.godwars_sergeant_goblin2"
+inherit = "npc.godwars_sergeant_goblin2"
+huntMode = 8
+huntRange = 30
+maxRange = 30
+attackRange = 7
+[npc.params]
+"param.npc_attack_type"="category.attacktype_magic"
+"param.attack_anim"="seq.godwars_sergeant_goblin2_sonic"
+"param.defend_anim"="seq.slice_surface_goblin_sergent_defend"
+"param.death_anim"="seq.slice_surface_goblin_sergent_death"
+"param.proj_type"="projanim.magic_spell"
+"param.proj_travel"="spotanim.godwars_goblin2_sonic_attk_proj"
+
+[[npc]]
+id = "npc.godwars_sergeant_goblin3"
+inherit = "npc.godwars_sergeant_goblin3"
+huntMode = 8
+huntRange = 30
+maxRange = 30
+attackRange = 7
+[npc.params]
+"param.npc_attack_type"="category.attacktype_heavy"
+"param.attack_anim"="seq.godwars_sergeant_goblin3_ranged"
+"param.defend_anim"="seq.slice_surface_goblin_sergent_defend"
+"param.death_anim"="seq.slice_surface_goblin_sergent_death"
+"param.proj_type"="projanim.thrown"
+"param.proj_travel"="spotanim.godwars_goblin3_handaxe_proj"

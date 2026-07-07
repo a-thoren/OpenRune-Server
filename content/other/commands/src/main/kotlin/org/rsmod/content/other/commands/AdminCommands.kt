@@ -143,6 +143,7 @@ constructor(
         onCommand("transmog", "Transmog player to NPC appearance (no args to reset)", ::transmog) {
             invalidArgs = "Use as ::transmog npcNameOrId (ex: goblin or 126) or ::transmog to reset"
         }
+        onCommand("graardor", "Teleport to General Graardor", ::graardor)
     }
 
     private fun god(cheat: Cheat) =
@@ -515,6 +516,10 @@ constructor(
             }
         protectedAccess.launch(player) { transmog(npcName) }
         player.mes("Transmog: '$npcName'")
+    }
+
+    private fun graardor(cheat: Cheat) = with(cheat) {
+        protectedAccess.launch(player) { telejump(CoordGrid(2872, 5358, 2)) }
     }
 
     private fun resolveArgTypeId(arg: String, names: Map<String, Int>): Int? {
