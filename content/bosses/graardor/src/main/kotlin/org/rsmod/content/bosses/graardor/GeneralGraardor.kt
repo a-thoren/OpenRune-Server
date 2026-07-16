@@ -22,9 +22,6 @@ class GeneralGraardor @Inject constructor(deps: BossDeps) : BossPluginScript(dep
     override fun ScriptContext.startup() {
         BossCombat.register(this, spec, deps)
 
-        // When the general respawns, any of his bodyguards that are currently dead are respawned
-        // alongside him. Bodyguards that are still alive keep their own state, and nothing is done
-        // on the general's death.
         onEvent<NpcStateEvents.Respawn> { if (npc.id == generalId) respawnDeadBodyguards(npc) }
     }
 
@@ -33,8 +30,6 @@ class GeneralGraardor @Inject constructor(deps: BossDeps) : BossPluginScript(dep
             .findAll(ZoneKey.from(general.coords), zoneRadius = BODYGUARD_SEARCH_RADIUS)
             .filter { it.id in bodyguardIds && it.hitpoints == 0 }
             .forEach { bodyguard ->
-                // Bring the respawn forward to next cycle; the engine's reveal pass then runs the
-                // normal respawn path (stats restored, coords reset to spawn) for it.
                 bodyguard.lifecycleRespawnCycle = deps.mapClock.cycle + 1
             }
     }
@@ -58,14 +53,14 @@ class GeneralGraardor @Inject constructor(deps: BossDeps) : BossPluginScript(dep
                     projectile(
                         spotanim = "spotanim.godwars_bandos_proj",
                         travel = "projanim.godwars_bandos_ranged",
-                        hit = Effect.Hit(damage = Roll(0..35), type = Ranged)
+                        hit = Effect.Hit(damage = Roll(15..35), type = Ranged)
                     )
                 }
 
             phase("combat") {
                 weightedSelectorRandom {
                     +random(melee, weight = 2, requires = WithinMeleeRange)
-                    +random(ranged, weight = 1)
+                    +random(ranged, weight = 1, requires = WithinMeleeRange)
                 }
             }
         }
