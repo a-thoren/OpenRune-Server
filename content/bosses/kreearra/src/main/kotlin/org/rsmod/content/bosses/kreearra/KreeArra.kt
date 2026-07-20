@@ -8,10 +8,17 @@ import org.rsmod.api.bosses.runtime.BossCombat
 import org.rsmod.api.bosses.runtime.BossDeps
 import org.rsmod.api.bosses.runtime.BossPluginScript
 import org.rsmod.api.bosses.spec.Effect
+import org.rsmod.api.combat.weapon.types.AttackTypes
+import org.rsmod.api.death.NpcAttackValidateHook
+import org.rsmod.api.death.NpcAttackValidateResult
+import org.rsmod.api.player.righthand
 import org.rsmod.api.script.onEvent
 import org.rsmod.game.entity.Npc
+import org.rsmod.game.entity.Player
 import org.rsmod.game.entity.npc.NpcStateEvents
+import org.rsmod.game.type.getOrNull
 import org.rsmod.map.zone.ZoneKey
+import org.rsmod.plugin.module.PluginModule
 import org.rsmod.plugin.scripts.ScriptContext
 
 class KreeArra @Inject constructor(deps: BossDeps) : BossPluginScript(deps) {
@@ -22,8 +29,6 @@ class KreeArra @Inject constructor(deps: BossDeps) : BossPluginScript(deps) {
     override fun ScriptContext.startup() {
         BossCombat.register(this, spec, deps)
 
-        // When Kree'arra respawns, any of his bodyguards that are currently dead are respawned
-        // alongside him. Bodyguards that are still alive keep their own state.
         onEvent<NpcStateEvents.Respawn> { if (npc.id == avatarId) respawnDeadBodyguards(npc) }
     }
 
@@ -31,20 +36,13 @@ class KreeArra @Inject constructor(deps: BossDeps) : BossPluginScript(deps) {
         deps.npcRepo
             .findAll(ZoneKey.from(avatar.coords), zoneRadius = BODYGUARD_SEARCH_RADIUS)
             .filter { it.id in bodyguardIds && it.hitpoints == 0 }
-            .forEach { bodyguard ->
-                // Bring the respawn forward to next cycle; the engine's reveal pass then runs the
-                // normal respawn path (stats restored, coords reset to spawn) for it.
-                bodyguard.lifecycleRespawnCycle = deps.mapClock.cycle + 1
-            }
+            .forEach { bodyguard -> bodyguard.lifecycleRespawnCycle = deps.mapClock.cycle + 1 }
     }
 
     override val spec =
         boss(AVATAR) {
-            // Kree'arra is fast (3-tick attacks) and attacks primarily from range.
             stats(attackRate = 3, aggressionRadius = 8)
 
-            // Signature wind blast: a Ranged AoE that strikes every player in the eyrie, not just
-            // the current target. A projectile is fired at each player from the avatar.
             val windRanged =
                 ability("wind_ranged") {
                     anim("seq.godwars_armadyl_avatar_wind_attack")
@@ -59,7 +57,6 @@ class KreeArra @Inject constructor(deps: BossDeps) : BossPluginScript(deps) {
                     )
                 }
 
-            // Single-target magic attack.
             val magic =
                 ability("magic") {
                     anim("seq.godwars_armadyl_avatar_wind_attack")
@@ -69,7 +66,6 @@ class KreeArra @Inject constructor(deps: BossDeps) : BossPluginScript(deps) {
                     )
                 }
 
-            // Talon swipe when a player is standing next to him.
             val claw =
                 ability("claw") {
                     anim("seq.godwars_armadyl_avatar_claw_attack")
@@ -98,9 +94,46 @@ class KreeArra @Inject constructor(deps: BossDeps) : BossPluginScript(deps) {
             )
         private const val BODYGUARD_SEARCH_RADIUS = 10
 
-        // Chebyshev radius from the avatar that comfortably covers the whole boss room, so the wind
-        // blast hits every player inside it (players in other regions/instances are far away and
-        // excluded).
         private const val ROOM_RADIUS = 15
+    }
+}
+
+public class KreeArraModule : PluginModule() {
+    override fun bind() {
+        addSetBinding<NpcAttackValidateHook>(KreeArraMeleeBlockHook::class.java)
+    }
+}
+
+internal class KreeArraMeleeBlockHook @Inject constructor(private val types: AttackTypes) :
+    NpcAttackValidateHook {
+    override fun validate(player: Player, npc: Npc): NpcAttackValidateResult {
+        if (npc.id !in UNREACHABLE_BY_MELEE) {
+            return NpcAttackValidateResult.Pass
+        }
+
+        val type = types.get(player)
+        if (type != null && !type.isMelee) {
+            return NpcAttackValidateResult.Pass
+        }
+
+        val weapon = getOrNull(player.righthand)
+        if (weapon != null && weapon.isCategoryType("category.halberd")) {
+            return NpcAttackValidateResult.Pass
+        }
+
+        return NpcAttackValidateResult.Deny(
+            "${npc.name} is flying too high for you to reach with melee."
+        )
+    }
+
+    private companion object {
+        private val UNREACHABLE_BY_MELEE =
+            hashSetOf(
+                    "npc.godwars_armadyl_avatar",
+                    "npc.godwars_armadyl_bodyguard_geerin",
+                    "npc.godwars_armadyl_bodyguard_kilisa",
+                    "npc.godwars_armadyl_bodyguard_skree",
+                )
+                .mapTo(HashSet()) { it.asRSCM(RSCMType.NPC) }
     }
 }

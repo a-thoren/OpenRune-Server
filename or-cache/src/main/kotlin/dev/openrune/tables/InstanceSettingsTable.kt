@@ -82,12 +82,8 @@ object InstanceSettingsTable {
 
         row("dbrow.instance_graardor") {
             column(KEY, "graardor")
-            // Real-map coords: EXIT_COORD lands just outside the Bandos door in the main dungeon,
-            // ENTER_COORD is the interior spawn just inside the boss room (level 2). The enter
-            // object is the Bandos god-door (also the public overworld entrance, gated on killcount
-            // by GraardorInstance); the exit object is the interior boss-room door.
-            columnCoord(EXIT_COORD, CoordGrid(2869, 5347, 2))
-            columnCoord(ENTER_COORD, CoordGrid(2868, 5354, 2))
+            columnCoord(EXIT_COORD, CoordGrid(2862, 5354, 2))
+            columnCoord(ENTER_COORD, CoordGrid(2864, 5354, 2))
             column(FEE, 0)
             column(MAX_PLAYERS, 20)
             column(TIME_LIMIT_MINUTES, 0)
@@ -104,13 +100,8 @@ object InstanceSettingsTable {
 
         row("dbrow.instance_kreearra") {
             column(KEY, "kreearra")
-            // Real-map coords: EXIT_COORD lands just outside the Armadyl door in the main dungeon
-            // (east of the room), ENTER_COORD is the interior spawn just inside the boss room
-            // (level 2). The enter object is the Armadyl god-door (also the public overworld
-            // entrance, gated on killcount by KreeArraInstance); the exit object is the interior
-            // Armadyl altar (an instance-only shortcut out).
-            columnCoord(EXIT_COORD, CoordGrid(2843, 5300, 2))
-            columnCoord(ENTER_COORD, CoordGrid(2838, 5300, 2))
+            columnCoord(EXIT_COORD, CoordGrid(2839, 5294, 2))
+            columnCoord(ENTER_COORD, CoordGrid(2839, 5295, 2))
             column(FEE, 0)
             column(MAX_PLAYERS, 20)
             column(TIME_LIMIT_MINUTES, 0)
@@ -123,6 +114,42 @@ object InstanceSettingsTable {
             column(DESCRIPTION, "Armadyl's aerial commander in the God Wars Dungeon.")
             columnRSCM(ENTER_OBJECT, "loc.godwars_dungeon_door_armadyl")
             columnRSCM(EXIT_OBJECT, "loc.godwars_dungeon_armadyl_altar01")
+        }
+
+        row("dbrow.instance_zilyana") {
+            column(KEY, "zilyana")
+            columnCoord(EXIT_COORD, CoordGrid(2909, 5265, 0))
+            columnCoord(ENTER_COORD, CoordGrid(2908, 5265, 0))
+            column(FEE, 0)
+            column(MAX_PLAYERS, 20)
+            column(TIME_LIMIT_MINUTES, 0)
+            column(GRACE_MINUTES, 10)
+            columnRSCM(BOSS_NPC, "npc.godwars_saradomin_avatar")
+            column(BOSS_NAME, "Commander Zilyana")
+            column(RECOMMENDED_COMBAT, 80, 90)
+            column(TEAM_SIZE, 20)
+            column(LOOT_MULTIPLIER, "x1.0")
+            column(DESCRIPTION, "Leader of Saradomin's forces in the God Wars Dungeon.")
+            columnRSCM(ENTER_OBJECT, "loc.godwars_dungeon_door_saradomin")
+            columnRSCM(EXIT_OBJECT, "loc.godwars_dungeon_saradomin_altar01")
+        }
+
+        row("dbrow.instance_kril") {
+            column(KEY, "kril")
+            columnCoord(EXIT_COORD, CoordGrid(2925, 5333, 2))
+            columnCoord(ENTER_COORD, CoordGrid(2925, 5332, 2))
+            column(FEE, 0)
+            column(MAX_PLAYERS, 20)
+            column(TIME_LIMIT_MINUTES, 0)
+            column(GRACE_MINUTES, 10)
+            columnRSCM(BOSS_NPC, "npc.godwars_zamorak_avatar")
+            column(BOSS_NAME, "K'ril Tsutsaroth")
+            column(RECOMMENDED_COMBAT, 80, 90)
+            column(TEAM_SIZE, 20)
+            column(LOOT_MULTIPLIER, "x1.0")
+            column(DESCRIPTION, "Leader of Zamorak's forces in the God Wars Dungeon.")
+            columnRSCM(ENTER_OBJECT, "loc.godwars_dungeon_door_zamorak")
+            columnRSCM(EXIT_OBJECT, "loc.godwars_dungeon_zamorak_altar01")
         }
 
         row("dbrow.instance_cowboss") {
