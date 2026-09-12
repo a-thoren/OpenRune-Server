@@ -1,4 +1,4 @@
-package org.rsmod.content.bosses.vardorvis
+package org.rsmod.content.bosses.deserttreasure2.vardorvis
 
 import jakarta.inject.Inject
 import org.rsmod.api.instances.BossInstanceRegistry
