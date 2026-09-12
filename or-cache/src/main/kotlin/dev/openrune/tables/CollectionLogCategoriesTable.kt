@@ -130,7 +130,6 @@ object CollectionLogCategoriesTable {
             column(STRUCT_ID, 4652)
             columnRSCM(COMPLETED_VARBIT, "varbit.collection_bosses_duke_completed")
             columnRSCM(COUNT_VARP_1, "varp.total_duke_sucellus_kills")
-            columnRSCM(COUNT_VARP_2, "varp.total_duke_sucellus_awakened_kills")
         }
 
         row("dbrow.collection_log_category_the_fight_caves") {
@@ -222,7 +221,6 @@ object CollectionLogCategoriesTable {
             column(STRUCT_ID, 4655)
             columnRSCM(COMPLETED_VARBIT, "varbit.collection_bosses_leviathan_completed")
             columnRSCM(COUNT_VARP_1, "varp.total_leviathan_kills")
-            columnRSCM(COUNT_VARP_2, "varp.total_leviathan_awakened_kills")
         }
 
         row("dbrow.collection_log_category_the_mad_angel") {
@@ -318,7 +316,6 @@ object CollectionLogCategoriesTable {
             column(STRUCT_ID, 4653)
             columnRSCM(COMPLETED_VARBIT, "varbit.collection_bosses_vardorvis_completed")
             columnRSCM(COUNT_VARP_1, "varp.total_vardorvis_kills")
-            columnRSCM(COUNT_VARP_2, "varp.total_vardorvis_awakened_kills")
         }
 
         row("dbrow.collection_log_category_venenatis_and_spindel") {
@@ -345,7 +342,6 @@ object CollectionLogCategoriesTable {
             column(STRUCT_ID, 4654)
             columnRSCM(COMPLETED_VARBIT, "varbit.collection_bosses_whisperer_completed")
             columnRSCM(COUNT_VARP_1, "varp.total_whisperer_kills")
-            columnRSCM(COUNT_VARP_2, "varp.total_whisperer_awakened_kills")
         }
 
         row("dbrow.collection_log_category_wintertodt") {
