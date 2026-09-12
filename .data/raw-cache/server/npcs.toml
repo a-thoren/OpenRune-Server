@@ -1707,8 +1707,16 @@ inherit = "npc.abyssalsire_sire_wandering"
 [[npc]]
 id = "npc.amoxliatl"
 inherit = "npc.amoxliatl"
+huntMode = 8
+huntRange = 8
 [npc.params]
 "param.killcount_varp"="varp.kc_amoxliatl"
+"param.death_anim"="seq.amoxliatl_death"
+"param.boss_hp_bar_mode"=2
+"param.boss_hp_bar_colour_back"=1581345
+"param.boss_hp_bar_colour_sliding"=5929868
+"param.boss_hp_bar_colour_remaining"=10872831
+"param.headbar"="headbar.amoxliatl"
 
 [[npc]]
 id = "npc.ancient_wyvern"

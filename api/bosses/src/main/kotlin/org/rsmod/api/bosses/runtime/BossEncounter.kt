@@ -30,6 +30,7 @@ class BossEncounter(
     private val cooldowns = mutableMapOf<String, Int>()
     private val forcedTickLastFired = mutableMapOf<String, Int>()
     private var rotationCursor = 0
+    private var rotationStarted = false
     private var basicAttackCount = 0
     private var forceAttackThreshold = -1
 
@@ -45,6 +46,7 @@ class BossEncounter(
         currentPhaseName = phaseName
         phaseEnteredTick = tick
         rotationCursor = 0
+        rotationStarted = false
         cooldowns.clear()
         forcedTickLastFired.clear()
         basicAttackCount = 0
@@ -126,6 +128,12 @@ class BossEncounter(
 
     private fun selectRotation(selector: Selector.Rotation): String? {
         if (selector.sequence.isEmpty()) return null
+        if (!rotationStarted) {
+            rotationStarted = true
+            if (selector.randomStart) {
+                rotationCursor = Random.nextInt(selector.sequence.size)
+            }
+        }
         val ability = selector.sequence[rotationCursor % selector.sequence.size]
         rotationCursor++
         return ability

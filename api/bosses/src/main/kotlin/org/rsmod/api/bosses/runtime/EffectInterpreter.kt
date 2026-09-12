@@ -9,9 +9,14 @@ import org.rsmod.api.bosses.spec.*
 import org.rsmod.api.bosses.spec.HitType as BossHitType
 import org.rsmod.api.combat.commons.CombatEffects
 import org.rsmod.api.combat.commons.DragonfireProtection
+import org.rsmod.api.combat.commons.player.combatPlayDefendAnim
 import org.rsmod.api.combat.commons.player.finishNpcHit
+import org.rsmod.api.combat.commons.player.queueCombatRetaliate
 import org.rsmod.api.combat.commons.types.MeleeAttackType
 import org.rsmod.api.npc.access.StandardNpcAccess
+import org.rsmod.api.player.disablePrayers
+import org.rsmod.api.player.hit.queueImpactHit
+import org.rsmod.api.player.hit.modifier.PlayerHitModifier
 import org.rsmod.api.player.output.mes
 import org.rsmod.api.player.stat.hitpoints
 import org.rsmod.game.entity.Npc
@@ -52,6 +57,7 @@ class EffectInterpreter(
             }
             is Effect.Delay -> access.delay(effect.ticks)
             is Effect.NoOp -> {}
+            is Effect.Message -> applyMessage(effect)
 
             is Effect.Hit -> applyHit(effect)
             is Effect.Projectile -> fireProjectile(access, effect)
@@ -60,6 +66,7 @@ class EffectInterpreter(
             is Effect.Summon -> summon(effect)
             is Effect.Poison -> applyPoison(effect)
             is Effect.Freeze -> applyFreeze(effect)
+            is Effect.DisablePrayers -> target.disablePrayers()
             is Effect.StatDrain -> applyStatDrain(effect)
             is Effect.Transmog -> {
                 val npcType = ServerCacheManager.getNpc(effect.to.asRSCM(RSCMType.NPC))
@@ -160,12 +167,26 @@ class EffectInterpreter(
                 damage = if (cap <= 0) 0 else deps.random.of(cap + 1)
             }
             if (damage > 0) {
-                hit.spotanim?.let {
-                    t.spotanim(it, delay = projAnim.clientCycles, height = hit.spotanimHeight)
-                }
+                hit.spotanim?.let { t.spotanim(it, delay = projAnim.clientCycles, height = hit.spotanimHeight) }
             }
-            t.finishNpcHit(npc, projAnim.serverCycles, hit.type.toEngine(), damage, deps.playerHitModifier)
+            if (proj.resolveOnImpact) {
+                t.finishNpcImpactHit(npc, projAnim.serverCycles, hit.type.toEngine(), damage, deps.playerHitModifier)
+            } else {
+                t.finishNpcHit(npc, projAnim.serverCycles, hit.type.toEngine(), damage, deps.playerHitModifier)
+            }
         }
+    }
+
+    private fun Player.finishNpcImpactHit(
+        source: Npc,
+        delay: Int,
+        type: HitType,
+        damage: Int,
+        modifier: PlayerHitModifier,
+    ) {
+        queueCombatRetaliate(source)
+        queueImpactHit(source, delay, type, damage, modifier)
+        combatPlayDefendAnim()
     }
 
     private fun applyTileAoE(aoe: Effect.TileAoE) {
@@ -261,6 +282,17 @@ class EffectInterpreter(
             }
         }
         return true
+    }
+
+    private fun applyMessage(effect: Effect.Message) {
+        val targets = when (val t = effect.target) {
+            is TargetExpr.Single -> listOfNotNull(resolveSingle(t))
+            is TargetExpr.Multi -> resolveMulti(t)
+            else -> listOf(target)
+        }
+        for (t in targets) {
+            t.mes(effect.text)
+        }
     }
 
     private fun applyPoison(effect: Effect.Poison) {

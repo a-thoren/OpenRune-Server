@@ -225,6 +225,18 @@ constructor(
 
     public fun npcsForInstance(id: InstanceId): List<Npc> = spawnedNpcs[id] ?: emptyList()
 
+    public fun resolveCoord(session: InstanceSession, coord: CoordGrid): CoordGrid? {
+        val region = regions[session.id] ?: return null
+        val local = RegionLocal(
+            level = coord.level,
+            regionZoneX = coord.mx,
+            regionZoneZ = coord.mz,
+            localX = coord.lx,
+            localZ = coord.lz,
+        )
+        return session.localCoord(region, local)
+    }
+
     public fun attachNpc(instanceId: InstanceId, npc: Npc) {
         spawnedNpcs.getOrPut(instanceId) { mutableListOf() }.add(npc)
         indexNpc(instanceId, npc)
