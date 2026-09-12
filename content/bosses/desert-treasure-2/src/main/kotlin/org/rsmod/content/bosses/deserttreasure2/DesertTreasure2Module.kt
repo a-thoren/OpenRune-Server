@@ -25,7 +25,7 @@ public class DesertTreasure2AwakenedKillHook @Inject constructor() : NpcDeathKil
         VarPlayerIntMapSetter.set(context.hero, varp, count)
         val notify = context.npc.paramOrNull(BaseParams.killcount_notify) ?: true
         if (notify) {
-            context.hero.mes("Your Awakened ${context.npc.name} kill count is: <col=ff0000>$count</col>")
+            context.hero.mes("Your ${context.npc.name} (Awakened) kill count is: <col=ff0000>$count</col>")
         }
     }
 }
