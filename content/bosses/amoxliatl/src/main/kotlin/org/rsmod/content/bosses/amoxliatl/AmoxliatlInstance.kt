@@ -8,6 +8,7 @@ import org.rsmod.api.bossbar.plugin.BossHpBarScript
 import org.rsmod.api.bosses.runtime.BossDeps
 import org.rsmod.api.bosses.runtime.suppressAttacks
 import org.rsmod.api.instances.BossInstanceRegistry
+import org.rsmod.api.instances.InstanceAccess
 import org.rsmod.api.instances.InstanceArea
 import org.rsmod.api.instances.InstanceEnterTransition
 import org.rsmod.api.instances.InstanceManager
@@ -16,6 +17,8 @@ import org.rsmod.api.instances.InstanceSession
 import org.rsmod.api.instances.withInstanceEnterTransition
 import org.rsmod.api.npc.apPlayer2
 import org.rsmod.api.npc.interact.AiPlayerInteractions
+import org.rsmod.api.player.output.mes
+import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 import org.rsmod.map.CoordGrid
@@ -39,8 +42,29 @@ class AmoxliatlInstance @Inject constructor(
                 deps.worldQueues.add(SPAWN_REVEAL_DELAY_TICKS) { spawnAmoxliatl(player, result.session) }
             }
         }
-        onEnterObject { defaultInstanceEntry() }
+        onEnterObject {
+            if (manager.sessionForPlayer(player) != null) {
+                defaultLeaveFlow()
+            } else {
+                privateInstanceEntry()
+            }
+        }
         onExitObject { defaultLeaveFlow() }
+    }
+
+    private suspend fun ProtectedAccess.privateInstanceEntry() {
+        if (manager.sessionForPlayer(player) != null) {
+            mes("You are already inside an instance.")
+            return
+        }
+        val owned = player.uuid?.let { manager.sessionOwnedBy(key, it) }
+        val result =
+            if (owned != null) {
+                manager.join(player, owned, worldClock.cycle, code = null, forceAccess = true)
+            } else {
+                manager.create(player, key, buildSpec(), InstanceAccess.Private, worldClock.cycle)
+            }
+        completeInstanceEntry(result)
     }
 
     private fun spawnAmoxliatl(player: Player, session: InstanceSession) {
