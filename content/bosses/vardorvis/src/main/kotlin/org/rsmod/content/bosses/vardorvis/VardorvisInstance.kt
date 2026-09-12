@@ -2,12 +2,9 @@ package org.rsmod.content.bosses.vardorvis
 
 import jakarta.inject.Inject
 import org.rsmod.api.instances.BossInstanceRegistry
-import org.rsmod.api.instances.InstanceAccess
 import org.rsmod.api.instances.InstanceArea
 import org.rsmod.api.instances.InstanceNpc
 import org.rsmod.api.instances.InstanceScript
-import org.rsmod.api.player.output.mes
-import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.vars.intVarBit
 import org.rsmod.api.script.onPlayerInit
 import org.rsmod.game.entity.Player
@@ -30,29 +27,8 @@ class VardorvisInstance @Inject constructor(registry: BossInstanceRegistry) :
             }
         }
 
-        onEnterObject {
-            if (manager.sessionForPlayer(player) != null) {
-                defaultLeaveFlow()
-            } else {
-                privateInstanceEntry()
-            }
-        }
+        onEnterObject { defaultInstanceEntry() }
         onExitObject { defaultLeaveFlow() }
-    }
-
-    private suspend fun ProtectedAccess.privateInstanceEntry() {
-        if (manager.sessionForPlayer(player) != null) {
-            mes("You are already inside an instance.")
-            return
-        }
-        val owned = player.uuid?.let { manager.sessionOwnedBy(key, it) }
-        val result =
-            if (owned != null) {
-                manager.join(player, owned, worldClock.cycle, code = null, forceAccess = true)
-            } else {
-                manager.create(player, key, buildSpec(), InstanceAccess.Private, worldClock.cycle)
-            }
-        completeInstanceEntry(result)
     }
 
     private companion object {
