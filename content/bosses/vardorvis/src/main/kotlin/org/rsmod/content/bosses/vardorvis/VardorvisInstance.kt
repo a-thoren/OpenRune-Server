@@ -82,6 +82,7 @@ class VardorvisInstance @Inject constructor(registry: BossInstanceRegistry) :
 
     private fun markAwakened(npc: Npc) {
         npc.vars["varn.awakened_state"] = 1
+        npc.vars["varn.skip_killcount"] = 1
         npc.baseHitpointsLvl *= 2
         npc.hitpoints = npc.baseHitpointsLvl
     }

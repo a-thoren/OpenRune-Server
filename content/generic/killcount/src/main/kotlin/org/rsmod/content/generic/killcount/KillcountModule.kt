@@ -19,15 +19,13 @@ public class KillcountModule : PluginModule() {
  */
 public class KillcountNpcKillHook @Inject constructor() : NpcDeathKillHook {
     override fun onKill(context: NpcDeathKillContext) {
-        val awakened = context.npc.vars["varn.awakened_state"] == 1
-        val awakenedVarp = if (awakened) context.npc.paramOrNull(BaseParams.killcount_varp_awakened) else null
-        val varp = awakenedVarp ?: context.npc.paramOrNull(BaseParams.killcount_varp) ?: return
+        if (context.npc.vars["varn.skip_killcount"] == 1) return
+        val varp = context.npc.paramOrNull(BaseParams.killcount_varp) ?: return
         val notify = context.npc.paramOrNull(BaseParams.killcount_notify) ?: true
         val count = context.hero.vars[varp] + 1
         VarPlayerIntMapSetter.set(context.hero, varp, count)
         if (notify) {
-            val name = if (awakened) "Awakened ${context.npc.name}" else context.npc.name
-            context.hero.mes("Your $name kill count is: <col=ff0000>$count</col>")
+            context.hero.mes("Your ${context.npc.name} kill count is: <col=ff0000>$count</col>")
         }
     }
 }

@@ -51,3 +51,6 @@ id = "varn.venenatis_attacks"
 
 [[varn]]
 id = "varn.awakened_state"
+
+[[varn]]
+id = "varn.skip_killcount"
