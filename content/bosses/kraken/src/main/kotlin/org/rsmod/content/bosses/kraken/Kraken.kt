@@ -13,8 +13,8 @@ import org.rsmod.api.bosses.spec.BossSpec
 import org.rsmod.api.bosses.spec.Condition
 import org.rsmod.api.death.NpcDeath
 import org.rsmod.api.npc.events.NpcHitEvents
-import org.rsmod.api.npc.queueDeath
 import org.rsmod.api.npc.interact.AiPlayerInteractions
+import org.rsmod.api.npc.queueDeath
 import org.rsmod.api.player.output.mes
 import org.rsmod.api.script.onEvent
 import org.rsmod.api.script.onNpcQueue

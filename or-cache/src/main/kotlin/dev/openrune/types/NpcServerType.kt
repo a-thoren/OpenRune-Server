@@ -78,7 +78,7 @@ data class NpcServerType(
     var rangedOverride: Int? = null,
     var magicOverride: Int? = null,
     var giveChase: Boolean = true,
-    @param:TomlField(["params"],serializer = ParamSerializer::class)
+    @param:TomlField(["params"], serializer = ParamSerializer::class)
     var paramsRaw: MutableMap<Int, Any>? = null,
 ) : Definition {
 
