@@ -98,6 +98,7 @@ internal class Whirlpools(
         private const val IMMUNE_MELEE = "varn.immune_melee"
         private const val IMMUNE_RANGED = "varn.immune_ranged"
         private const val IMMUNE_MAGIC = "varn.immune_magic"
+
         // UNVERIFIED: idle reset window and check interval
         private const val IDLE_RESET_TICKS = 50
         private const val IDLE_CHECK_INTERVAL = 5

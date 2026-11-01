@@ -18,9 +18,9 @@ import org.rsmod.api.npc.queueDeath
 import org.rsmod.api.player.isValidTarget
 import org.rsmod.api.player.output.mes
 import org.rsmod.api.player.protect.ProtectedAccess
+import org.rsmod.api.script.onApNpcT
 import org.rsmod.api.script.onEvent
 import org.rsmod.api.script.onNpcQueue
-import org.rsmod.api.script.onApNpcT
 import org.rsmod.api.script.onOpNpcU
 import org.rsmod.content.bosses.kraken.Whirlpools.Companion.ARISE_ANIM
 import org.rsmod.content.bosses.kraken.Whirlpools.Companion.ATTACK_ANIM
@@ -339,6 +339,7 @@ class Kraken @Inject constructor(
         private const val MAGIC_MAX = 28
         private const val TENTACLE_ATTACK_RATE = 4
         private const val TENTACLE_MAX = 2
+
         // UNVERIFIED: tentacle search radius
         private const val TENTACLE_ZONE_RADIUS = 2
         private const val TYPELESS_PENETRATION = 100
