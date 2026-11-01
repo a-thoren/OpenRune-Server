@@ -376,8 +376,12 @@ constructor(
         cancelPendingEntry(player, currentTick)
     }
 
+    /** Content veto: a check returning true keeps a dying player in their instance. */
+    public val deathKeepChecks: MutableList<(Player) -> Boolean> = mutableListOf()
+
     public fun handleDeath(player: Player, currentTick: Int) {
         val session = sessionForPlayer(player) ?: return
+        if (deathKeepChecks.any { it(player) }) return
         removeOccupant(player, session, currentTick)
     }
 

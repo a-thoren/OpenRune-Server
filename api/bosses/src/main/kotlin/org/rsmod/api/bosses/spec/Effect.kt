@@ -49,7 +49,14 @@ sealed interface Effect {
         val loops: Int = 1,
         val delay: Int = 0,
     ) : Effect
-    data class Spotanim(val spot: String, val height: Int = 0, val delay: Int = 0, val slot: Int = 0) : Effect
+    data class Spotanim(
+        val spot: String,
+        val height: Int = 0,
+        val delay: Int = 0,
+        val slot: Int = 0,
+        /** Plays on these players instead of the npc when set. */
+        val target: TargetExpr? = null,
+    ) : Effect
     data class MapSpotanim(
         val spot: String,
         val at: TargetExpr.Single,

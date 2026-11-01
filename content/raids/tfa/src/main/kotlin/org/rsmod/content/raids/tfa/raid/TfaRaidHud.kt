@@ -17,6 +17,7 @@ import org.rsmod.content.raids.tfa.party.TfaLobby
 import org.rsmod.content.raids.tfa.party.TfaPartySettings
 import org.rsmod.content.raids.tfa.raid.encounter.bork.BorkEncounter
 import org.rsmod.content.raids.tfa.raid.encounter.dreadnoth.DreadnothEncounter
+import org.rsmod.content.raids.tfa.raid.encounter.ezekiel.EzekielEncounter
 import org.rsmod.content.raids.tfa.raid.encounter.guardian.GuardianEncounter
 import org.rsmod.content.raids.tfa.raid.encounter.ocellus.OcellusEncounter
 import org.rsmod.content.raids.tfa.raid.encounter.xarth.XarthEncounter
@@ -30,12 +31,14 @@ class TfaRaidHud
 @Inject
 constructor(
     private val lobby: TfaLobby,
+    private val raids: TfaRaids,
     private val manager: InstanceManager,
     private val encounter: GuardianEncounter,
     private val ocellus: OcellusEncounter,
     private val dreadnoth: DreadnothEncounter,
     private val bork: BorkEncounter,
     private val xarth: XarthEncounter,
+    private val ezekiel: EzekielEncounter,
     private val worldQueues: WorldQueueList,
     private val eventBus: EventBus,
 ) {
@@ -61,7 +64,12 @@ constructor(
             closeFor(left)
         }
         val fight: TfaFight? =
-            encounter.of(id) ?: ocellus.of(id) ?: dreadnoth.of(id) ?: bork.of(id) ?: xarth.of(id)
+            encounter.of(id)
+                ?: ocellus.of(id)
+                ?: dreadnoth.of(id)
+                ?: bork.of(id)
+                ?: xarth.of(id)
+                ?: ezekiel.of(id)
         for (member in inside) {
             if (visible.add(member)) open(member, party)
             sendStates(member, party, inside)
@@ -99,7 +107,7 @@ constructor(
                 when {
                     member == null -> STATE_EMPTY
                     member !in inside -> STATE_NOT_ENTERED
-                    member.hitpoints <= 0 -> STATE_DEAD
+                    member.hitpoints <= 0 || raids.isDead(member) -> STATE_DEAD
                     else -> healthState(member)
                 }
             VarPlayerIntMapSetter.set(viewer, "$STATE_VARBIT$slot", state)

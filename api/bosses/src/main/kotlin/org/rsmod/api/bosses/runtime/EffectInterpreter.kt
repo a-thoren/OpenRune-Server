@@ -150,7 +150,14 @@ class EffectInterpreter internal constructor(
                     }
                 }
             }
-            is Effect.Spotanim -> npc.spotanim(effect.spot, effect.delay, effect.height, effect.slot)
+            is Effect.Spotanim -> {
+                val on = effect.target
+                if (on == null) {
+                    npc.spotanim(effect.spot, effect.delay, effect.height, effect.slot)
+                } else {
+                    for (t in resolvePlayers(on)) t.spotanim(effect.spot, delay = effect.delay, height = effect.height, slot = effect.slot)
+                }
+            }
             is Effect.MapSpotanim -> {
                 val coord = resolveTile(effect.at)
                 val spot = SpotanimType(effect.spot.asRSCM(RSCMType.SPOTANIM))

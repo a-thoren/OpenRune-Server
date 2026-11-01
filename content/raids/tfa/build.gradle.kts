@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     implementation(projects.api.pluginCommons)
+    implementation(projects.api.attr)
     implementation(projects.api.bosses)
     implementation(projects.api.bossHpBarPlugin)
     implementation(projects.api.dropTable)
@@ -12,6 +13,7 @@ dependencies {
     implementation(projects.api.invtx)
     implementation(projects.api.player)
     implementation(projects.api.playerOutput)
+    implementation(projects.api.shops)
     implementation(projects.api.specials)
     implementation(projects.engine.routefinder)
     implementation(projects.content.drops)
