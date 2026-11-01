@@ -182,6 +182,12 @@ public fun ScriptContext.onApNpcT(
 
 public fun ScriptContext.onApNpcT(
     type: NpcServerType,
+    component: String,
+    action: suspend ProtectedAccess.(NpcTEvents.Ap) -> Unit,
+): Unit = onProtectedEvent(EventBus.composeLongKey(type.id, component.asRSCM(RSCMType.COMPONENT)), action)
+
+public fun ScriptContext.onApNpcT(
+    type: NpcServerType,
     component: ComponentType,
     action: suspend ProtectedAccess.(NpcTEvents.Ap) -> Unit,
 ): Unit = onProtectedEvent(EventBus.composeLongKey(type.id, component.packed), action)

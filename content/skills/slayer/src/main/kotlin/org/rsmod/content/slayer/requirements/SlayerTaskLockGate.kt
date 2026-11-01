@@ -1,42 +1,32 @@
 package org.rsmod.content.slayer.requirements
 
 import jakarta.inject.Inject
+import org.rsmod.api.area.checker.AreaChecker
 import org.rsmod.api.config.SlayerTaskCredit
 import org.rsmod.api.death.NpcAttackValidateHook
 import org.rsmod.api.death.NpcAttackValidateResult
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 
-internal class SlayerTaskLockAttackHook @Inject constructor() : NpcAttackValidateHook {
+internal class SlayerTaskLockAttackHook @Inject constructor(private val areas: AreaChecker) :
+    NpcAttackValidateHook {
     override fun validate(player: Player, npc: Npc): NpcAttackValidateResult {
-        if (!isTaskLocked(npc)) return NpcAttackValidateResult.Pass
+        if (!areas.inArea(KRAKEN_COVE, npc.coords)) return NpcAttackValidateResult.Pass
+        if (TENTACLE_MARKER in npc.visType.internalName) return NpcAttackValidateResult.Pass
         if (SlayerTaskCredit.counts(npc.visType, SlayerTaskCredit.taskKey(player))) {
             return NpcAttackValidateResult.Pass
         }
-        return NpcAttackValidateResult.Deny(MESSAGE)
+        return NpcAttackValidateResult.Deny(messageFor(npc))
     }
 
-    private fun isTaskLocked(npc: Npc): Boolean {
-        val name = npc.visType.internalName
-        if (name in TASK_LOCKED_NAMES) return true
-        return TASK_LOCKED_PREFIXES.any(name::startsWith) && TENTACLE_MARKER !in name
-    }
+    private fun messageFor(npc: Npc): String =
+        if (npc.visType.internalName.startsWith(KRAKEN_PREFIX)) KRAKEN_MESSAGE else FIEND_MESSAGE
 
     private companion object {
-        const val MESSAGE = "You need to have a Slayer task to harm this creature."
+        const val KRAKEN_COVE = "area.kraken_cove"
+        const val KRAKEN_PREFIX = "npc.slayer_kraken"
         const val TENTACLE_MARKER = "_tentacle"
-
-        val TASK_LOCKED_NAMES = setOf("npc.slayer_kraken")
-
-        val TASK_LOCKED_PREFIXES =
-            listOf(
-                "npc.slayer_kraken_boss",
-                "npc.slayer_kraken_sub",
-                "npc.smoke_devil",
-                "npc.cerberus",
-                "npc.abyssalsire",
-                "npc.gargboss_",
-                "npc.araxxor",
-            )
+        const val KRAKEN_MESSAGE = "Oi, I'm Lieve McCracken and I say leave m' Kraken alone!"
+        const val FIEND_MESSAGE = "Oi, I'm Lieve, and I say leave it!"
     }
 }

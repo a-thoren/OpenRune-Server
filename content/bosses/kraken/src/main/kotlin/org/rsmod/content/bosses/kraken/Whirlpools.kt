@@ -40,6 +40,8 @@ internal class Whirlpools(
         ariseAnim: String,
         whirlpoolSpec: BossSpec,
         onChange: (Npc) -> Unit,
+        ariseSynth: String? = null,
+        attackDelay: Int = WAKE_ATTACK_DELAY,
     ) {
         val surfaced = ServerCacheManager.getNpc(into.asRSCM(RSCMType.NPC)) ?: return
         val damageTaken = pool.type.hitpoints - pool.hitpoints
@@ -48,12 +50,13 @@ internal class Whirlpools(
         pool.hitpoints = max(surfaced.hitpoints - damageTaken, 1)
         onChange(pool)
         pool.anim(ariseAnim, 0, 1)
+        ariseSynth?.let { deps.worldRepo.soundArea(pool.coords, it, radius = ARISE_SOUND_RADIUS) }
         pool.apRangeOverride = ATTACK_RANGE
         pool.apRequiresLineOfSight = false
         pool.movementLocked = true
         pool.mode = NpcMode.ApPlayer2
         pool.apPlayer2(target, aiPlayerInteractions)
-        deps.suppressAttacks(pool, WAKE_ATTACK_DELAY)
+        deps.suppressAttacks(pool, attackDelay)
         touchCombat(pool)
         watchIdle(pool, whirlpoolSpec, onChange)
     }
@@ -95,8 +98,10 @@ internal class Whirlpools(
         private const val IMMUNE_MELEE = "varn.immune_melee"
         private const val IMMUNE_RANGED = "varn.immune_ranged"
         private const val IMMUNE_MAGIC = "varn.immune_magic"
+        // UNVERIFIED: idle reset window and check interval
         private const val IDLE_RESET_TICKS = 50
         private const val IDLE_CHECK_INTERVAL = 5
         private const val WAKE_ATTACK_DELAY = 3
+        private const val ARISE_SOUND_RADIUS = 5
     }
 }

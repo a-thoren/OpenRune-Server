@@ -9,6 +9,7 @@ import org.rsmod.api.obj.charges.ObjChargeManager
 import org.rsmod.api.obj.charges.ObjChargeManager.Companion.isFailure
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.stat.magicLvl
+import org.rsmod.api.utils.format.formatAmount
 import org.rsmod.api.weapons.MagicWeapon
 import org.rsmod.api.weapons.WeaponAttackManager
 import org.rsmod.api.weapons.WeaponMap
@@ -68,8 +69,8 @@ constructor(
                 return
             }
 
-            anim("seq.human_castwave_staff")
-            spotanim("spotanim.slayer_tots_casting")
+            anim("seq.human_castwave_staff_walkmerge")
+            spotanim("spotanim.slayer_tots_casting", height = CAST_HEIGHT)
 
             val proj =
                 manager.spawnProjectile(
@@ -82,7 +83,7 @@ constructor(
 
             val splash = manager.rollStaffSplash(this, target, attack)
             if (splash) {
-                manager.playSplashFx(this, target, clientDelay, null, soundRadius = 10)
+                manager.playSplashFx(this, target, clientDelay, CAST_SOUND, soundRadius = 10)
                 manager.queueSplashHit(this, target, clientDelay, serverDelay)
             } else {
                 val baseMaxHit = getMaxHit(player.magicLvl)
@@ -91,7 +92,7 @@ constructor(
                     source = this,
                     target = target,
                     clientDelay = clientDelay,
-                    castSound = null,
+                    castSound = CAST_SOUND,
                     soundRadius = 10,
                     hitSpot = "spotanim.slayer_tots_impact",
                     hitSpotHeight = 92,
@@ -103,8 +104,11 @@ constructor(
 
             if (chargeResult.fullyUncharged) {
                 manager.stopCombat(this)
-                mes("Your Trident of the Seas has run out of charges.")
+                mes("Your $NAME has run out of charges.")
                 return
+            }
+            if (chargeResult.chargesLeft % CHARGE_WARNING_INTERVAL == 0) {
+                mes("Your $NAME has ${chargeResult.chargesLeft.formatAmount} charges left.")
             }
             manager.continueCombat(this, target)
         }
@@ -142,5 +146,9 @@ constructor(
         const val CHARGE_VAROBJ = "varobj.charges_16383"
         const val MAX_CHARGES = 2_500
         const val HIT_SOUND = "synth.contact_darkness_impact"
+        const val CAST_SOUND = "synth.shadow_cast"
+        const val CAST_HEIGHT = 92
+        const val NAME = "Trident of the seas"
+        const val CHARGE_WARNING_INTERVAL = 100
     }
 }

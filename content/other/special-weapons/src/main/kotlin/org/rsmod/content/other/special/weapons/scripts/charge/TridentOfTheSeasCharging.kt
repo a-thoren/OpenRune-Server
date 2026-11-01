@@ -43,7 +43,7 @@ constructor(private val charges: ObjChargeManager, private val objRepo: ObjRepos
         }
 
     private fun ProtectedAccess.checkCharges(obj: InvObj?) {
-        val name = if (obj.isType(UNCHARGED)) "Uncharged trident" else "Trident of the Seas"
+        val name = if (obj.isType(UNCHARGED)) "Uncharged trident" else NAME
         when (val count = currentCharges(obj)) {
             0 -> mes("Your $name has no charges.")
             1 -> mes("Your $name has one charge.")
@@ -56,7 +56,7 @@ constructor(private val charges: ObjChargeManager, private val objRepo: ObjRepos
         val maxByMaterials = maxChargesFromInventory()
         if (maxByMaterials == 0) {
             val name = if (trident.isType(UNCHARGED)) "Uncharged trident" else "trident"
-            mes(
+            mesbox(
                 "You need one death rune, one chaos rune, five fire runes and ten coins to " +
                     "charge the $name."
             )
@@ -65,57 +65,60 @@ constructor(private val charges: ObjChargeManager, private val objRepo: ObjRepos
 
         val room = MAX_CHARGES - currentCharges(trident)
         if (room <= 0) {
-            mes("Your Trident of the Seas is already fully charged.")
+            mes("Your $NAME is already fully charged.")
             return
         }
 
         val max = min(room, maxByMaterials)
-        val requested = min(countDialog("How many charges would you like to add? (0 - $max)"), max)
-        if (requested == 0) {
+        val requested =
+            min(countDialog("How many charges would you like to add? (0 - ${max.formatAmount})"), max)
+        if (requested <= 0) {
             return
         }
 
+        applyCharge(inventory, invSlot, requested)
+    }
+
+    suspend fun ProtectedAccess.applyCharge(
+        inventory: Inventory,
+        invSlot: Int,
+        requested: Int,
+    ) {
         val currentSlot = inventory[invSlot]
         if (currentSlot == null || !currentSlot.isType(UNCHARGED) && !currentSlot.isType(CHARGED)) {
             return
         }
+        if (requested > min(MAX_CHARGES - currentCharges(currentSlot), maxChargesFromInventory())) {
+            return
+        }
 
-        val removeRunes =
-            invDel(
-                inv = inv,
-                type1 = DEATH_RUNE,
-                count1 = requested * DEATH_PER_CHARGE,
-                type2 = CHAOS_RUNE,
-                count2 = requested * CHAOS_PER_CHARGE,
-            )
+        val death = requested * DEATH_PER_CHARGE
+        val chaos = requested * CHAOS_PER_CHARGE
+        val fire = requested * FIRE_PER_CHARGE
+        val coins = requested * COINS_PER_CHARGE
+
+        val removeRunes = invDel(inv, DEATH_RUNE, death, CHAOS_RUNE, chaos)
         if (removeRunes.failure) {
             return
         }
-        val removeRest =
-            invDel(
-                inv = inv,
-                type1 = FIRE_RUNE,
-                count1 = requested * FIRE_PER_CHARGE,
-                type2 = COINS,
-                count2 = requested * COINS_PER_CHARGE,
-            )
+        val removeRest = invDel(inv, FIRE_RUNE, fire, COINS, coins)
         if (removeRest.failure) {
-            invAdd(inv, DEATH_RUNE, requested * DEATH_PER_CHARGE)
-            invAdd(inv, CHAOS_RUNE, requested * CHAOS_PER_CHARGE)
+            invAddOrDrop(objRepo, DEATH_RUNE, death)
+            invAddOrDrop(objRepo, CHAOS_RUNE, chaos)
             return
         }
 
         val result = charges.addCharges(inventory, invSlot, requested, CHARGE_VAROBJ, MAX_CHARGES)
         if (result.isFailure()) {
-            invAdd(inv, DEATH_RUNE, requested * DEATH_PER_CHARGE)
-            invAdd(inv, CHAOS_RUNE, requested * CHAOS_PER_CHARGE)
-            invAdd(inv, FIRE_RUNE, requested * FIRE_PER_CHARGE)
-            invAdd(inv, COINS, requested * COINS_PER_CHARGE)
+            invAddOrDrop(objRepo, DEATH_RUNE, death)
+            invAddOrDrop(objRepo, CHAOS_RUNE, chaos)
+            invAddOrDrop(objRepo, FIRE_RUNE, fire)
+            invAddOrDrop(objRepo, COINS, coins)
             return
         }
 
         val added = if (requested == 1) "a charge" else "${requested.formatAmount} charges"
-        mes("You add $added to the Trident of the Seas. New total: ${result.total.formatAmount}")
+        mesbox("You add $added to the $NAME. New total: ${result.total.formatAmount}")
     }
 
     private fun ProtectedAccess.maxChargesFromInventory(): Int {
@@ -127,8 +130,9 @@ constructor(private val charges: ObjChargeManager, private val objRepo: ObjRepos
     }
 
     private suspend fun ProtectedAccess.uncharge(inventory: Inventory, invSlot: Int) {
-        val trident = inventory[invSlot] ?: return
-        val count = currentCharges(trident)
+        if (inventory[invSlot] == null) {
+            return
+        }
 
         val confirmation =
             choice2(
@@ -142,10 +146,19 @@ constructor(private val charges: ObjChargeManager, private val objRepo: ObjRepos
             return
         }
 
+        applyUncharge(inventory, invSlot)
+    }
+
+    fun ProtectedAccess.applyUncharge(inventory: Inventory, invSlot: Int) {
+        val trident = inventory[invSlot]
+        if (trident == null || !trident.isType(FULL) && !trident.isType(CHARGED)) {
+            return
+        }
+
         val refunded =
             if (trident.isType(FULL)) {
                 inventory[invSlot] = InvObj(UNCHARGED)
-                count
+                MAX_CHARGES
             } else {
                 charges.removeAllCharges(inventory, invSlot, CHARGE_VAROBJ)
             }
@@ -153,10 +166,11 @@ constructor(private val charges: ObjChargeManager, private val objRepo: ObjRepos
         invAddOrDrop(objRepo, DEATH_RUNE, refunded * DEATH_PER_CHARGE)
         invAddOrDrop(objRepo, CHAOS_RUNE, refunded * CHAOS_PER_CHARGE)
         invAddOrDrop(objRepo, FIRE_RUNE, refunded * FIRE_PER_CHARGE)
-        mes("You uncharge your Trident of the Seas.")
+        mes("You uncharge your $NAME.")
     }
 
     private companion object {
+        const val NAME = "Trident of the seas"
         const val FULL = "obj.tots"
         const val CHARGED = "obj.tots_charged"
         const val UNCHARGED = "obj.tots_uncharged"

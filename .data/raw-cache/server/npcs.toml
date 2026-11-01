@@ -3470,18 +3470,10 @@ magicOverride = 1
 [[npc]]
 id = "npc.slayer_kraken_boss_whirlpool"
 inherit = "npc.slayer_kraken_boss_whirlpool"
-respawnRate = 12
+respawnRate = 10
 [npc.params]
 "param.killcount_varp"="varp.total_kraken_boss_kills"
 "param.death_anim"="seq.swan_queen_death"
-"param.dropped_remains"=-1
-
-[[npc]]
-id = "npc.slayer_kraken_boss_tentacle_whirlpool"
-inherit = "npc.slayer_kraken_boss_tentacle_whirlpool"
-respawnRate = 2147483647
-[npc.params]
-"param.death_anim"="seq.tentacle_monster_death"
 "param.dropped_remains"=-1
 
 [[npc]]

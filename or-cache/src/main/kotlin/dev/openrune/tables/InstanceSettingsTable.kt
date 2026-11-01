@@ -22,6 +22,7 @@ object InstanceSettingsTable {
     const val ENTER_COORD = 12
     const val ENTER_OBJECT = 13
     const val EXIT_OBJECT = 14
+    const val FEE_FROM_BANK = 15
 
     fun instanceSettings() = dbTable("dbtable.instance_settings", serverOnly = true) {
         column("key", KEY, VarType.STRING)
@@ -39,6 +40,7 @@ object InstanceSettingsTable {
         column("enter_coord", ENTER_COORD, VarType.COORDGRID)
         column("enter_object", ENTER_OBJECT, VarType.LOC)
         column("exit_object", EXIT_OBJECT, VarType.LOC)
+        column("fee_from_bank", FEE_FROM_BANK, VarType.BOOLEAN)
 
         row("dbrow.instance_scurrius") {
             column(KEY, "scurrius")
@@ -278,7 +280,8 @@ object InstanceSettingsTable {
             column(KEY, "kraken")
             columnCoord(EXIT_COORD, CoordGrid(2280, 10016, 0))
             columnCoord(ENTER_COORD, CoordGrid(2280, 10022, 0))
-            column(FEE, 0)
+            column(FEE, 25_000)
+            column(FEE_FROM_BANK, true)
             column(MAX_PLAYERS, 1)
             column(TIME_LIMIT_MINUTES, 0)
             column(GRACE_MINUTES, 10)

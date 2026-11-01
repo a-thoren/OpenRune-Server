@@ -543,6 +543,7 @@ class EffectInterpreter internal constructor(
     private fun showMissSpotanim(hit: Effect.Hit, t: Player, rolled: Int, clientDelay: Int) {
         if (rolled <= 0) {
             hit.missSpotanim?.let { t.spotanim(it, delay = clientDelay, height = hit.spotanimHeight) }
+            hit.missSound?.let { t.soundSynth(it, 1, clientDelay) }
         }
     }
 

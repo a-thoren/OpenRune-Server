@@ -401,8 +401,6 @@ class RotationBuilder internal constructor() {
 // Re-exports for clean spec authoring
 typealias Roll = DamageExpr.Roll
 typealias Accuracy = DamageExpr.Accuracy
-
-val MagicalRanged: AccuracyKind = AccuracyKind.MagicalRanged
 typealias Fixed = DamageExpr.Fixed
 typealias NpcMaxHit = DamageExpr.NpcMaxHit
 typealias HpBelow = Condition.HpBelow
@@ -433,3 +431,4 @@ val Dragonfire: HitType = HitType.Dragonfire
 val DragonfireMetal: HitType = HitType.DragonfireMetal
 val WyvernIce: HitType = HitType.WyvernIce
 val Typeless: HitType = HitType.Typeless
+val MagicalRanged: AccuracyKind = AccuracyKind.MagicalRanged
