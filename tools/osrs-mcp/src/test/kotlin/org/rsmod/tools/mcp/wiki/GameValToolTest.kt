@@ -91,6 +91,3 @@ class GameValToolTest {
         output.write(bytes)
     }
 }
-
-
-

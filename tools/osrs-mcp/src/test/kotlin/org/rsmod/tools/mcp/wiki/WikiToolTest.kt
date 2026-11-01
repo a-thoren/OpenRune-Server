@@ -15,7 +15,6 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 
-
 class WikiToolTest {
     private val mapper = jacksonObjectMapper()
 
@@ -231,5 +230,3 @@ class WikiToolTest {
         output.write(bytes)
     }
 }
-
-
