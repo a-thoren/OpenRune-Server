@@ -3,6 +3,7 @@ package org.rsmod.content.raids.tfa.party
 import jakarta.inject.Inject
 import org.rsmod.api.instances.InstanceEnterTransition
 import org.rsmod.api.instances.InstanceManager
+import org.rsmod.api.instances.InstanceSession
 import org.rsmod.api.instances.withInstanceEnterTransition
 import org.rsmod.api.player.hook.TeleportType
 import org.rsmod.api.player.output.mes
@@ -10,8 +11,9 @@ import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.script.onOpLoc1
 import org.rsmod.content.raids.party.RaidParty
 import org.rsmod.content.raids.tfa.raid.TfaRaidHud
+import org.rsmod.content.raids.tfa.raid.TfaRaids
 import org.rsmod.content.raids.tfa.raid.encounter.guardian.GuardianEncounter
-import org.rsmod.content.raids.tfa.raid.TfaFight
+import org.rsmod.content.raids.tfa.raid.nexus.TfaNexus
 import org.rsmod.game.MapClock
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
@@ -23,6 +25,8 @@ constructor(
     private val lobby: TfaLobby,
     private val partyScript: TfaPartyScript,
     private val hud: TfaRaidHud,
+    private val raids: TfaRaids,
+    private val nexus: TfaNexus,
     private val guardian: GuardianEncounter,
     private val manager: InstanceManager,
     private val clock: MapClock,
@@ -72,8 +76,12 @@ constructor(
                 lobby.refreshDetails(applicant)
             }
         }
-        lobby.bindRaid(room.fight.session.id, party)
-        hud.track(room.fight.session.id)
+        val session = room.fight.session
+        lobby.bindRaid(session.id, party)
+        val raid = raids.start(party)
+        raid.roomId = session.id
+        nexus.placeGuardianDoors(raid, session)
+        hud.track(session.id)
         mes("You enter the Archive...")
         withInstanceEnterTransition(InstanceEnterTransition()) {
             telejump(room.enter, TeleportType.Exempt)
@@ -86,8 +94,8 @@ constructor(
         }
     }
 
-    private suspend fun ProtectedAccess.join(room: TfaFight) {
-        val joined = manager.join(player, room.session, clock.cycle, forceAccess = true)
+    private suspend fun ProtectedAccess.join(room: InstanceSession) {
+        val joined = manager.join(player, room, clock.cycle, forceAccess = true)
         if (joined !is InstanceManager.Result.Joined) {
             mes((joined as? InstanceManager.Result.Failed)?.reason ?: "You can't enter right now.")
             return
@@ -95,16 +103,16 @@ constructor(
         mes("You enter the Archive...")
         withInstanceEnterTransition(InstanceEnterTransition()) {
             telejump(joined.enter, TeleportType.Exempt)
-            manager.finalizeEntry(player, room.session, clock.cycle)
+            manager.finalizeEntry(player, room, clock.cycle)
         }
     }
 
-    private fun liveRoom(party: RaidParty<TfaPartySettings>): TfaFight? {
+    /** The room the party is in, whichever it is, so a late member can catch up. */
+    private fun liveRoom(party: RaidParty<TfaPartySettings>): InstanceSession? {
         if (!party.locked) return null
-        for (member in party.members) {
-            val session = manager.sessionForPlayer(member) ?: continue
-            guardian.of(session.id)?.let { return it }
-        }
-        return null
+        val raid = raids.of(party)?.takeIf { !it.wiping } ?: return null
+        val id = raid.roomId ?: return null
+        if (lobby.raidParty(id) !== party) return null
+        return manager.sessionForId(id)
     }
 }

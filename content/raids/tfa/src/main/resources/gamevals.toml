@@ -49,12 +49,18 @@ xarth_heal_pending = 64467
 xarth_last_hit = 64468
 xarth_dead = 64469
 xarth_done = 64470
+ezekiel_hp_max = 64471
+ezekiel_weakened = 64472
+ezekiel_finale = 64473
+ezekiel_dead = 64474
+ezekiel_done = 64475
 
 [gamevals.dbtable]
 tfa_guardian_scaling = 62000
 tfa_dreadnoth_scaling = 62001
 tfa_bork_scaling = 62002
 tfa_xarth_scaling = 62003
+tfa_ezekiel_scaling = 62004
 
 [gamevals.dbrow]
 tfa_guardian_scaling_2 = 50000
@@ -85,6 +91,13 @@ tfa_xarth_scaling_5 = 50030
 tfa_xarth_scaling_6 = 50031
 tfa_xarth_scaling_7 = 50032
 tfa_xarth_scaling_8 = 50033
+tfa_ezekiel_scaling_2 = 50034
+tfa_ezekiel_scaling_3 = 50035
+tfa_ezekiel_scaling_4 = 50036
+tfa_ezekiel_scaling_5 = 50037
+tfa_ezekiel_scaling_6 = 50038
+tfa_ezekiel_scaling_7 = 50039
+tfa_ezekiel_scaling_8 = 50040
 
 [gamevals.varp]
 ocellus_spin = 64150
@@ -98,6 +111,7 @@ xarth_bound = 64155
 dreadnoth_health = 66
 ocellus_quadrant_destroy = 72
 ocellus_rift_charge = 75
+tfa_ezekiel_sword_timer = 87
 
 [gamevals.midi]
 tfa_ocellus_combat_part_01 = 893
@@ -161,6 +175,23 @@ tfa_smork_voice_8 = 12755
 tfa_smork_voice_9 = 12756
 tfa_smork_last_line = 12761
 tfa_smork_tower_death = 12251
+tfa_ezekiel_special_cast = 12454
+tfa_ezekiel_star_burst = 12441
+tfa_ezekiel_fence_impact = 12407
+tfa_ezekiel_finale_cast_sound = 12416
+tfa_ezekiel_finale_drop = 12400
+tfa_ezekiel_sword_telegraph_1 = 12417
+tfa_ezekiel_sword_telegraph_3 = 12413
+tfa_ezekiel_sword_telegraph_4 = 12423
 
 [gamevals.area]
 tfa_lobby = 30020
+
+[gamevals.currency]
+# The Quartermaster's Alliance Supplies, paid in Supply Credits (varbit.tfa_supply_points).
+tfa_supply_credits = 65528
+
+[gamevals.inv]
+# Alliance Supplies stock (.data/raw-cache/server/shops/tfa_supplies_shop*.toml).
+tfa_supplies_shop = 65477
+tfa_supplies_shop_failure = 65476

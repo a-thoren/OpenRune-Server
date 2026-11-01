@@ -1,0 +1,61 @@
+# The Quartermaster's Alliance Supplies in The Fractured Archive (content:raids:tfa). Stock is the
+# Wiki's (Quartermaster (The Fractured Archive)); prices live in TfaSupplyShopOperations. Live stock
+# limits per player are not modelled: it restocks every cycle and Supply Credits limit buying.
+[[inventory]]
+id = "inv.tfa_supplies_shop"
+name = "Alliance Supplies"
+
+scope = "Shared"
+stack = "Always"
+size = 9
+
+protect = false
+runWeight = false
+restock = true
+allStock = false
+placeholders = false
+
+[[inventory.stock]]
+obj = "obj.4dosepotionofsaradomin"
+count = 6
+restockCycles = 1
+
+[[inventory.stock]]
+obj = "obj.4dose2restore"
+count = 4
+restockCycles = 1
+
+[[inventory.stock]]
+obj = "obj.4doseprayerrestore"
+count = 4
+restockCycles = 1
+
+[[inventory.stock]]
+obj = "obj.mantaray"
+count = 10
+restockCycles = 1
+
+[[inventory.stock]]
+obj = "obj.halibut"
+count = 5
+restockCycles = 1
+
+[[inventory.stock]]
+obj = "obj.giant_krill"
+count = 10
+restockCycles = 1
+
+[[inventory.stock]]
+obj = "obj.2doseprayerrestore"
+count = 1
+restockCycles = 1
+
+[[inventory.stock]]
+obj = "obj.2doserangerspotion"
+count = 1
+restockCycles = 1
+
+[[inventory.stock]]
+obj = "obj.2dose2combat"
+count = 1
+restockCycles = 1
